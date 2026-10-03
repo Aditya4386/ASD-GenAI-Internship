@@ -234,7 +234,8 @@ SCORE: <integer 1-10>"""
             return [ln.lstrip("- ").strip() for ln in s.splitlines() if ln.strip().startswith("-")]
 
         score = 5.0
-        raw_score = sections.get("SCORE", "5").strip().split()[0].replace("/10", "")
+        score_text = sections.get("SCORE", "5").strip()
+        raw_score = score_text.split()[0].replace("/10", "") if score_text else "5"
         try:
             score = float(raw_score)
         except ValueError:
