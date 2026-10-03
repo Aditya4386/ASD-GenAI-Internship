@@ -20,6 +20,12 @@ A production-ready AI-powered document question-answering platform featuring a *
                                                             └─────────────────────────────────────────────────┘
 ```
 
+## 🌐 Live Demo & Deployment
+
+The project is fully deployed and live on Render. You can interact with the multi-agent pipeline here:
+- **Frontend (UI)**: [https://asd-genai-internship-1.onrender.com/](https://asd-genai-internship-1.onrender.com/)
+- **Backend (API)**: [https://asd-genai-internship.onrender.com](https://asd-genai-internship.onrender.com)
+
 ## ✨ Features
 
 ### 🤖 Multi-Agent Pipeline (LangGraph)
