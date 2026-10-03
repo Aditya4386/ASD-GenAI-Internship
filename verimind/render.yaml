@@ -1,0 +1,53 @@
+# render.yaml — Render.com Infrastructure as Code
+# This file tells Render how to build and deploy VeriMind.
+# Docs: https://render.com/docs/blueprint-spec
+
+services:
+  # ─────────────────────────────────────────────
+  # 1. Backend — FastAPI Web Service
+  # ─────────────────────────────────────────────
+  - type: web
+    name: verimind-backend
+    runtime: python
+    region: oregon               # Change to: ohio, virginia, frankfurt, singapore, etc.
+    plan: free                   # Upgrade to 'starter' for always-on (no spin-down)
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false              # You will enter this in the Render dashboard
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: ALLOWED_ORIGINS
+        sync: false              # Set to your frontend URL after you deploy it
+      - key: PYTHON_VERSION
+        value: "3.11"
+
+  # ─────────────────────────────────────────────
+  # 2. Frontend — Static Site
+  # ─────────────────────────────────────────────
+  - type: web
+    name: verimind-frontend
+    runtime: static
+    region: oregon
+    plan: free
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    routes:
+      # SPA fallback — serve index.html for all routes
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false              # Set to your backend Web Service URL from step 1
