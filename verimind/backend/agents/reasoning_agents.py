@@ -336,7 +336,8 @@ CONFIDENCE: <0.0–1.0>"""
         )
 
         confidence = 0.7
-        raw_conf = sections.get("CONFIDENCE", "0.7").strip().split()[0]
+        conf_text = sections.get("CONFIDENCE", "0.7").strip()
+        raw_conf = conf_text.split()[0] if conf_text else "0.7"
         try:
             confidence = max(0.0, min(1.0, float(raw_conf)))
         except ValueError:
