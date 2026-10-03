@@ -50,7 +50,7 @@ class TestMultiAgentGraph:
         result = graph._retrieve_context(state)
         
         assert result["context"] == "Test context about AI."
-        mock_doc_processor.get_context.assert_called_once_with("What is AI?", k=5)
+        mock_doc_processor.get_context.assert_called_once_with("What is AI?", k=3)
     
     def test_should_use_agents_true(self, graph):
         """Test conditional edge when agents enabled"""
