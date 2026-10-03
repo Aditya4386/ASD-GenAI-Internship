@@ -31,21 +31,9 @@ class BaseAgent(ABC):
         pass
     
     def create_chain(self):
-        chain = (
+        return (
             RunnablePassthrough()
             | self.get_prompt()
             | self.llm
             | StrOutputParser()
-        )
-        # Apply robust exponential backoff to handle Groq's 8000 TPM limit
-        # Waits 5s, 10s, 20s... up to 60s max per retry, max 10 attempts
-        return chain.with_retry(
-            stop_after_attempt=10,
-            wait_exponential_jitter=True,
-            exponential_jitter_params={
-                "initial": 5.0,
-                "max": 60.0,
-                "exp_base": 2.0,
-                "jitter": 1.0
-            }
         )

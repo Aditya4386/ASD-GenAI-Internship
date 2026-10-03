@@ -2,6 +2,7 @@ from typing import Dict, Any, List, AsyncGenerator
 from langchain_core.prompts import ChatPromptTemplate
 from agents.base_agent import BaseAgent
 from models.schemas import AgentResponse
+from utils.retry_utils import with_rate_limit_retry, with_rate_limit_retry_async_gen
 
 
 # ── Shared markdown formatting instruction injected into every prompt ──────────
@@ -79,6 +80,7 @@ Answer:"""
             "markdown_rules": _MARKDOWN_RULES,
         }
 
+    @with_rate_limit_retry
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         chain = self.create_chain()
         answer = chain.invoke(self._build_inputs(state))
@@ -94,6 +96,7 @@ Answer:"""
         state["agent_responses"].append(response)
         return state
 
+    @with_rate_limit_retry_async_gen
     async def process_stream(self, state: Dict[str, Any]) -> AsyncGenerator[str, None]:
         chain = self.create_chain()
         full_answer = ""
@@ -162,6 +165,7 @@ SUMMARY:
             "answer":   state.get("generator_answer", ""),
         }
 
+    @with_rate_limit_retry
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         chain = self.create_chain()
         debate_output = chain.invoke(self._build_inputs(state))
@@ -179,6 +183,7 @@ SUMMARY:
         state["agent_responses"].append(response)
         return state
 
+    @with_rate_limit_retry_async_gen
     async def process_stream(self, state: Dict[str, Any]) -> AsyncGenerator[str, None]:
         chain = self.create_chain()
         full_output = ""
@@ -255,6 +260,7 @@ SCORE: <integer 1-10>"""
             "debate_summary": state.get("debate_result", {}).get("summary", ""),
         }
 
+    @with_rate_limit_retry
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         chain = self.create_chain()
         critic_output = chain.invoke(self._build_inputs(state))
@@ -272,6 +278,7 @@ SCORE: <integer 1-10>"""
         state["agent_responses"].append(response)
         return state
 
+    @with_rate_limit_retry_async_gen
     async def process_stream(self, state: Dict[str, Any]) -> AsyncGenerator[str, None]:
         chain = self.create_chain()
         full_output = ""
@@ -361,6 +368,7 @@ CONFIDENCE: <0.0–1.0>"""
             "markdown_rules": _MARKDOWN_RULES,
         }
 
+    @with_rate_limit_retry
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         chain = self.create_chain()
         judge_output = chain.invoke(self._build_inputs(state))
@@ -377,6 +385,7 @@ CONFIDENCE: <0.0–1.0>"""
         state["agent_responses"].append(response)
         return state
 
+    @with_rate_limit_retry_async_gen
     async def process_stream(self, state: Dict[str, Any]) -> AsyncGenerator[str, None]:
         chain = self.create_chain()
         full_output = ""

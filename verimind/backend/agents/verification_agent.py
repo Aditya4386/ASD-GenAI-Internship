@@ -2,6 +2,7 @@ from typing import Dict, Any, List, AsyncGenerator
 from langchain_core.prompts import ChatPromptTemplate
 from agents.base_agent import BaseAgent
 from models.schemas import AgentResponse, VerificationResult
+from utils.retry_utils import with_rate_limit_retry, with_rate_limit_retry_async_gen
 import requests
 import json
 
@@ -53,6 +54,7 @@ CONTRADICTIONS:
         except:
             return []
     
+    @with_rate_limit_retry
     def process(self, state: Dict[str, Any]) -> Dict[str, Any]:
         context = state.get("context", "")
         question = state.get("question", "")
@@ -121,6 +123,7 @@ CONTRADICTIONS:
         state["agent_responses"].append(response)
         return state
     
+    @with_rate_limit_retry_async_gen
     async def process_stream(self, state: Dict[str, Any]) -> AsyncGenerator[str, None]:
         context = state.get("context", "")
         question = state.get("question", "")
